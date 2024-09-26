@@ -60,7 +60,7 @@ Code Overview
 - Add Bluetooth functionality to transmit ECG data to a mobile app.
 
 License:
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 Acknowledgments
 - AD8232 Sensor Module documentation and reference designs.
