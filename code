@@ -1,0 +1,68 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 32
+#define OLED_RESET -1
+#define SCREEN_ADDRESS 0x3C  // Change this to 0x3D if needed
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+const int ECG_PIN = A0;  // ECG analog output pin
+const int graphHeight = 20;  // Height of the graph area
+const int graphWidth = 128;  // Width of the graph area
+
+int ecgValues[graphWidth];  // Array to store ECG values
+
+void setup() {
+  Serial.begin(9600);
+
+  // Initialize the OLED display
+  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for (;;);
+  }
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.print("Portable ECG Monitoring");
+  display.display();
+
+  delay(2000);  // Display title for 2 seconds
+
+  display.clearDisplay();
+}
+
+void loop() {
+  // Shift old values to the left
+  for (int i = 0; i < graphWidth - 1; i++) {
+    ecgValues[i] = ecgValues[i + 1];
+  }
+
+  // Read new ECG value
+  ecgValues[graphWidth - 1] = analogRead(ECG_PIN);
+  int currentECGValue = ecgValues[graphWidth - 1];
+
+  // Print the current ECG value to the Serial Monitor
+  Serial.println(currentECGValue);
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.print("ECG Value: ");
+  display.println(currentECGValue);
+
+  // Draw the ECG graph
+  for (int x = 0; x < graphWidth - 1; x++) {
+    int y1 = map(ecgValues[x], 0, 1023, SCREEN_HEIGHT - 1, SCREEN_HEIGHT - 1 - graphHeight);
+    int y2 = map(ecgValues[x + 1], 0, 1023, SCREEN_HEIGHT - 1, SCREEN_HEIGHT - 1 - graphHeight);
+    display.drawLine(x, y1, x + 1, y2, SSD1306_WHITE);
+  }
+
+  display.display();
+  delay(100);  // Delay to control the refresh rate
+}
