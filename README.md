@@ -65,6 +65,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 Acknowledgments
 - AD8232 Sensor Module documentation and reference designs.
 - U8glib Library for handling OLED displays.
-
-
-Let me know if you’d like to add anything or make changes!
